@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -14,45 +15,71 @@ public class Main {
 
     /**
      * this is the main method...
+     *
      * @param args
      */
     public static void main(String[] args) {
-        System.out.println("Welcome to My MIS");
-        System.out.println("");
-        retriveFromFile();
-        while (true){
-            System.out.println("  1 enter a student \n  2 delete a student\n  3 edit a student \n  4 search a student\n" +
-                    "  5 view all students\n  6 exit\n\n          enter the number wich you want to do ");
+        System.out.println("Welcome to My MIS\n\n");
+        // retriveFromFile();
+        controller();
+        return;
+    }
 
-            int i = scannerObject.nextInt();
+    private static void controller() {
+        while (true) {
+            System.out.println("1 enter a student \n"+
+                    "2 delete a student\n"+
+                    "3 edit a student \n"+
+                    "4 search a student\n" +
+                    "5 view all students\n"+
+                    "6 exit\n\n"+
+                    "\tenter the number which you want to do ");
 
-                switch (i) {
-                    case 1:
+            int i = 0;
+
+            try {
+                i = scannerObject.nextInt();
+            } catch (Exception ex) {
+                System.out.println("Main controller exception");
+            }
+
+
+            switch (i) {
+                case 1:
+                    try {
                         addStudent();
-                        break;
+                    } catch (MyException ex) {
+                        System.err.println(ex.getErrorCode() + " - " + ex.getMessage());
+                    }
 
-                    case 2:
-                        deleteStudent();
-                        break;
+                    break;
 
-                    case 3:
-                        editStudent();
-                        break;
+                case 2:
+                    deleteStudent();
+                    break;
 
-                    case 4:
-                        searchStudent();
-                        break;
+                case 3:
+                    editStudent();
+                    break;
 
-                    case 5:
-                        viewAllStudent();
-                        break;
+                case 4:
+                    searchStudent();
+                    break;
 
-                    case 6:
-                        writeToFile();
-                        System.exit(0);
-                }
+                case 5:
+                    viewAllStudent();
+                    break;
+
+                case 6:
+                    // writeToFile();
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("please enter valid input");
+                    controller();
             }
         }
+    }
 
     private static void retriveFromFile() {
 
@@ -71,7 +98,7 @@ public class Main {
             br = new BufferedReader(new FileReader(FILENAME));
 
             while ((sCurrentLine = br.readLine()) != null) {
-                String[] ar=sCurrentLine.split(",");
+                String[] ar = sCurrentLine.split(",");
 
                 student tempstudent = new student();
                 tempstudent.setStuId(Integer.parseInt(ar[0]));
@@ -88,27 +115,27 @@ public class Main {
 
     private static void writeToFile() {
 
-       String FILENAME = "/home/induwara/IdeaProjects/StudentMis/log.txt";
+        String FILENAME = "/home/induwara/IdeaProjects/StudentMis/log.txt";
 
-            BufferedWriter bw = null;
-            FileWriter fw = null;
+        BufferedWriter bw = null;
+        FileWriter fw = null;
 
-            try {
+        try {
 
-                fw = new FileWriter(FILENAME);
-                bw = new BufferedWriter(fw);
+            fw = new FileWriter(FILENAME);
+            bw = new BufferedWriter(fw);
 
-                for (student aStudentArray : studentArray) {
-                    bw.write(String.valueOf(aStudentArray));
-                }
-
-
-                System.out.println("Done");
-
-            } catch (IOException e) {
-                e.printStackTrace();
+            for (student aStudentArray : studentArray) {
+                bw.write(String.valueOf(aStudentArray));
             }
+
+
+            System.out.println("Done");
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
 
     private static void viewAllStudent() {
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
@@ -169,25 +196,44 @@ public class Main {
 
     private static void addStudent() {
         student tempStudent = new student();
-        System.out.println("enter student details");
+        System.out.println("Enter student details");
         System.out.println("id");
-        int tempId = 0;
-        try{
-            tempId = scannerObject.nextInt();
-            tempStudent.setStuId(tempId);
+        int tempid = 0;
+        try {
+            tempid = scannerObject.nextInt();
+            if (tempid <= 0) {
+                throw new MyException("1111", "Id should grater than zero");
+            }
 
-            System.out.println("name");
-            String tempName = scannerObject.next();
-            tempStudent.setStuName(tempName);
-
-            System.out.println("school");
-            String tempSchool = scannerObject.next();
-            tempStudent.setStuSchool(tempSchool);
-
-            studentArray.add(tempStudent);
-        }catch (Exception ex){
-            System.out.println("Exception is caught");
-            addStudent();
+            tempStudent.setStuId(tempid);
+        } catch (InputMismatchException ex) {
+            System.out.println("Please enter a valid number");
+            scannerObject.next();
+            controller();
         }
+
+
+        System.out.println("name");
+        try {
+            String tempname = scannerObject.next();
+            tempStudent.setStuName(tempname);
+        } catch (InputMismatchException ex) {
+            System.out.println("Exception is catched");
+            scannerObject.next();
+            controller();
+        }
+
+        try {
+            System.out.println("school");
+            String tempschool = scannerObject.next();
+            tempStudent.setStuSchool(tempschool);
+        } catch (InputMismatchException ex) {
+            System.out.println("Exception is catched");
+            scannerObject.next();
+            controller();
+        }
+
+        studentArray.add(tempStudent);
+
     }
 }
