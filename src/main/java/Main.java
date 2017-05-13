@@ -168,20 +168,26 @@ public class Main {
     }
 
     private static void addStudent() {
-        student tempstudent = new student();
+        student tempStudent = new student();
         System.out.println("enter student details");
         System.out.println("id");
-        int tempid = scannerObject.nextInt();
-        tempstudent.setStuId(tempid);
+        int tempId = 0;
+        try{
+            tempId = scannerObject.nextInt();
+            tempStudent.setStuId(tempId);
 
-        System.out.println("name");
-        String tempname = scannerObject.next();
-        tempstudent.setStuName(tempname);
+            System.out.println("name");
+            String tempName = scannerObject.next();
+            tempStudent.setStuName(tempName);
 
-        System.out.println("school");
-        String tempschool = scannerObject.next();
-        tempstudent.setStuSchool(tempschool);
+            System.out.println("school");
+            String tempSchool = scannerObject.next();
+            tempStudent.setStuSchool(tempSchool);
 
-        studentArray.add(tempstudent);
+            studentArray.add(tempStudent);
+        }catch (Exception ex){
+            System.out.println("Exception is caught");
+            addStudent();
+        }
     }
 }
